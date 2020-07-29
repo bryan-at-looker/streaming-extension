@@ -50,6 +50,8 @@ export function CarouselComponent( {data}: any) {
 }
 
 const StyledCard = styled(Card)`
+  background-color: #FCCC12;
+  border: 0;
   width: 300px;
   height: 400px;
   text-align: center;

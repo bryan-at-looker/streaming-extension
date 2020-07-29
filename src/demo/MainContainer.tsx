@@ -8,32 +8,34 @@ import {filter} from 'lodash'
 import {newQueryTaskPoller} from '../helpers'
 import { CarouselComponent } from './CarouselComponent';
 import { Heading } from '@looker/components';
+import styled from 'styled-components'
 
-const QUERY_ID = 3829;
+// const QUERY_ID = 4679;
 
-export function MainContainer() {
-  const [summary, setSummary] = useState<any>({});
+export function MainContainer({summary}: any) {
+  // const [summary, setSummary] = useState<any>({});
 
-  const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
-  const sdk: LookerSDK = extensionContext.coreSDK
+  // const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
+  // const sdk: LookerSDK = extensionContext.coreSDK
 
   useEffect(()=>{
-    newQueryTaskPoller(sdk, QUERY_ID, 'json_detail', setSummary)
+    // newQueryTaskPoller(sdk, QUERY_ID, 'json_detail', setSummary)
   },[])
 
     const data = createSections(summary?.data)
+    console.log(data)
     return (
     <>
       {data.tv && <>
-        <StyledHeading title={"TV Shows"} mt='xxsmall'/>
+        <ContentHeading title={"TV Shows"} mt='xxsmall'/>
         <CarouselComponent data={data.tv}></CarouselComponent>
       </>}
       {data.movie && <>
-        <StyledHeading title={"Movies"}/>
+        <ContentHeading title={"Movies"}/>
         <CarouselComponent data={data.movie}></CarouselComponent>
       </>}
       {data.promos && <>
-        <StyledHeading title={"Promoted Content"}/>
+        <ContentHeading title={"Promoted Content"}/>
         <CarouselComponent data={data.promos}></CarouselComponent>
       </>}
     </>
@@ -43,7 +45,6 @@ export function MainContainer() {
 function createSections (data: any) {
   const type_field = 'peacock_sample.type'
   const promo_field = 'peacock_sample.current_promotion'
-  console.log(data)
   return  {
     tv: filter(data, (o)=>{ return o[type_field]['value'] === 'TV' } ),
     movie: filter(data, (o)=>{ return o[type_field]['value'] === 'Movie' }),
@@ -51,6 +52,14 @@ function createSections (data: any) {
   }
 }
 
-const StyledHeading = ({ title, mt }: any) => {
-  return <Heading mt={(mt)?mt:"xxsmall"}  ml="xxxlarge" fontWeight="bold">{title}</Heading>
+const ContentHeading = ({ title, mt }: any) => {
+  return <StyledHeading 
+    mt={(mt)?mt:"xxsmall"}  
+    ml="xxxlarge" 
+    fontWeight="bold"
+  >{title}</StyledHeading>
 } 
+
+const StyledHeading = styled(Heading)`
+  color: white;
+`

@@ -1,49 +1,28 @@
-  /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-import React from 'react'
-import {Box, Flex} from '@looker/components'
-import {ExtensionContext} from '@looker/extension-sdk-react'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { ExtensionContext } from '@looker/extension-sdk-react'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { hot } from "react-hot-loader/root"
-import { PeacockLogo } from './PeacockLogo'
 import { MainContainer } from './MainContainer'
 import styled from 'styled-components'
 import { PeacockSvg } from './PeacockSvg'
+import { newQueryTaskPoller } from '../helpers'
+import { Box, FlexItem, Flex } from '@looker/components'
+import { TopbarNavigation } from './TopbarNavigation'
 
-class ExtensionInternal extends React.Component<any, any> {
-  static contextType = ExtensionContext
-  context!: React.ContextType<typeof ExtensionContext>
+const QUERY_ID = 4679;
 
-  constructor(props: RouteComponentProps) {
-    super(props)
-    this.state = {    }
-  }
+const ExtensionInternal = () => {
+  // static contextType = ExtensionContext
+  // context!: React.ContextType<typeof ExtensionContext>
+  const [summary, setSummary] = useState<any>({});
+  const [iteration, setIteration] = useState<any>(false);
+  
+  const context = useContext(ExtensionContext)
+  const sdk = context.coreSDK
 
-  componentDidMount() {
+  useEffect(() => {
     // window.addEventListener('scroll', (e)=>{ console.log(window.scrollY) }) 
-    window.onscroll = function() {scrollFunction()};
+    window.onscroll = function () { scrollFunction() };
 
     function scrollFunction() {
       const logo = document.getElementById('logo')
@@ -56,63 +35,42 @@ class ExtensionInternal extends React.Component<any, any> {
         }
       }
     }
-   }
+    newQueryTaskPoller(sdk, QUERY_ID, 'json_detail', setSummary)
+  }, [])
 
-  componentDidUpdate() {}
-
-  /*
-  // TEMPLATE CODE FOR RUNNING ANY QUERY
-  async runQuery() {
-      try {
-      const result = await this.context.coreSDK.ok(
-        this.context.coreSDK.run_inline_query({
-          result_format: "json_detail",
-          limit: 10,
-          body: {
-            total: true,
-            model: "thelook",
-            view: "users",
-            fields: ["last_name", "gender"],
-            sorts: [`last_name desc`]
-          }
-        })
-      )
-      this.setState({
-        queryResult: JSON.stringify(result, undefined, 2),
-        runningQuery: false
-      })
-    } catch (error) {
-      this.setState({
-        queryResult: "",
-        runningQuery: false,
-        errorMessage: "Unable to run query"
-      })
-    }
-  }
-  */
-
-
-  render() {
+  if (summary && summary.data && summary.data.length && iteration) {
+  // if( true ) {
     return (
       <>
-        <StyledFlex id="topbar" >
+        <StyledFlex alignItems="center" justifyContent="flex-start" id="topbar" >
+          <FlexItem mr="xxlarge">
             <StyledLogoBox id="logo">
-              <PeacockSvg></PeacockSvg>
+              <PeacockSvg font_fill="white"></PeacockSvg>
             </StyledLogoBox>
-            
-            {/* <PeacockLogo></PeacockLogo> */}
-          
+          </FlexItem>
+          <FlexItem >
+            <TopbarNavigation/>
+          </FlexItem>
         </StyledFlex>
         <StyledBox>
-          <MainContainer></MainContainer>
-        </StyledBox>   
+          <MainContainer summary={summary}></MainContainer>
+        </StyledBox>
       </>
-    )
+    )  
+  } else {
+    return <FullScreen pl="xxxxlarge">
+      <PeacockSvg 
+        font_fill="white" 
+        loading={"true"}
+        setIteration={setIteration}
+      />
+    </FullScreen>
   }
+  
 }
 
-const StyledFlex = styled.div`
-background-color: white;
+const StyledFlex = styled(Flex)`
+background-color: black;
 overflow: hidden;
 transition: 0.4s; /* Adds a transition effect when the padding is decreased */
 position: fixed; /* Sticky/fixed navbar */
@@ -130,6 +88,13 @@ transition: 0.6s;
 const StyledBox = styled.div`
 width: 100vw;
 margin-top: 99px;
+background-color: black;
+`
+
+const FullScreen = styled(Box)`
+width: 100vw;
+height: 100vh;
+background-color: black;
 `
 
 export const Extension = hot(withRouter(ExtensionInternal))

@@ -33,6 +33,11 @@ window.addEventListener('DOMContentLoaded', async (event) => {
   const root = document.createElement('div')
   document.body.appendChild(root)
 
+  const style = document.createElement('style')
+  const css = `body { background-color: black; }`
+  style.innerHTML = css
+  document.getElementsByTagName('head')[0].appendChild(style)
+
   const loading = (
     <Flex width='100%' height='90%' alignItems='center' justifyContent='center'>
       <Spinner color='black' />

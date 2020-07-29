@@ -21,7 +21,7 @@ export function StarsComponent( {val, rendered}: any) {
 
 const StyledDivStars = styled.div`
 unicode-bidi: bidi-override;
-color: #c5c5c5;
+color: white;
 font-size: 25px;
 height: 25px;
 margin: 0 auto;
@@ -31,7 +31,7 @@ text-shadow: 0px 1px 0 #a2a2a2;
 `
 // body > div > div > div:nth-child(2) > div > div > div > div > ul > a:nth-child(1) > div > div > div > span > span.TextBase-sc-1sjok63-0.Text-sc-1wcc5y1-0.cswHzG
 const StyledDivTop = styled.div`
-color: #e7711b;
+color: #FF7112;
 padding: 0;
 position: absolute;
 z-index: 1;
@@ -44,8 +44,4 @@ const StyledDivBottom = styled.div`
 padding: 0;
 display: block;
 z-index: 0;
-`
-
-const StyledTooltip = styled(Tooltip)`
-  top: 6px;
 `
